@@ -36,7 +36,10 @@ df = pd.DataFrame(data)
 df = df.explode('Incubation') 
 
 # Split the Incubation column into Incubation and Observation
-df[['Incubation','Observation']] = df['Incubation'].str.split('|',expand=True)
+df[['Incubation','Observation']] = df['Incubation'].str.split('=',expand=True)
 
 # Save the DataFrame.  
 df.to_csv('Data/Cells_Experiments.csv', index=False)
+
+# Print the DataFrame
+print(df)
