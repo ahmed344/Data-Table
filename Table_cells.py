@@ -38,6 +38,10 @@ df = df.explode('Incubation')
 # Split the Incubation column into Incubation and Observation
 df[['Incubation','Observation']] = df['Incubation'].str.split('=',expand=True)
 
+# Replace positive and negative by with Ecad and without Ecad
+df['Incubation'] = df['Incubation'].str.replace('positive','with Ecad')
+df['Incubation'] = df['Incubation'].str.replace('negative','without Ecad')
+
 # Save the DataFrame.  
 df.to_csv('Data/Cells_Experiments.csv', index=False)
 
