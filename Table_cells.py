@@ -20,7 +20,7 @@ for experiment in Experiments:
         discription += word + ' '
     Discription.append(discription)
     # Extract the incubations from each directory
-    Chambers = os.listdir('Data/Cells/{}'.format(experiment))
+    Chambers = os.listdir(f'Data/Cells/{experiment}')
     Chambers_list = []
     for Chamber in Chambers:
         Chambers_list.append(Chamber.replace('_', ' '))
@@ -36,11 +36,7 @@ df = pd.DataFrame(data)
 df = df.explode('Incubation') 
 
 # Split the Incubation column into Incubation and Observation
-df[['Incubation','Observation']] = df['Incubation'].str.split('=',expand=True)
-
-# Replace positive and negative by with Ecad and without Ecad
-df['Incubation'] = df['Incubation'].str.replace('positive','with Ecad')
-df['Incubation'] = df['Incubation'].str.replace('negative','without Ecad')
+df[['Incubation', 'Observation']] = df['Incubation'].str.split('=',expand=True)
 
 # Save the DataFrame.  
 df.to_csv('Data/Cells_Experiments.csv', index=False)
