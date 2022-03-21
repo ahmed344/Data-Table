@@ -1,35 +1,37 @@
 #! /usr/bin/python
 
 # Libraries
+import numpy as np
 import pandas as pd
 import os 
 
 # Extract the name of each experiment directory
-Experiments = os.listdir('Data/Cells_on_BSA/')
+experiments = os.listdir('Data/Cells_on_BSA/')
 # Sort the experiment list
-Experiments.sort()
+experiments.sort()
 
 # Extract the date, discription, incubation, adhesion and notes
-Date, Discription, Incubation, Adhesion, Notes = [], [], [], [], []
-for experiment in Experiments:
+date, discriptions, incubation, adhesions, blebs, notes = [], [], [], [], [], []
+for experiment in experiments:
     # Extract the date
-    Date.append(experiment.split('_')[0])
+    date.append(experiment.split('_')[0])
     # Extract the discription
     discription = ''
     for word in experiment.split('_')[1:]:
         discription += word + ' '
-    Discription.append(discription)
+    discriptions.append(discription)
     # Extract the incubations, adhesion and notes from each directory
-    Chambers = os.listdir(f'Data/Cells_on_BSA/{experiment}')
-    Chambers_list = []
-    for Chamber in Chambers:
-        Chambers_list.append(Chamber.replace('_', ' '))
-        Adhesion.append(open(f'Data/Cells_on_BSA/{experiment}/{Chamber}/table.csv').readlines()[1][:-1])
-        Notes.append(open(f'Data/Cells_on_BSA/{experiment}/{Chamber}/note.txt').read()[:-1])        
-    Incubation.append(Chambers_list)
+    chambers = os.listdir(f'Data/Cells_on_BSA/{experiment}')
+    chambers_list = []
+    for chamber in chambers:
+        chambers_list.append(chamber.replace('_', ' '))
+        adhesions.append(open(f'Data/Cells_on_BSA/{experiment}/{chamber}/table.csv').readlines()[1][:-1])
+        blebs.append(open(f'Data/Cells_on_BSA/{experiment}/{chamber}/table.csv').readlines()[3][:-1])
+        notes.append(open(f'Data/Cells_on_BSA/{experiment}/{chamber}/note.txt').read()[:-1])        
+    incubation.append(chambers_list)
 
 # Assign the data.  
-data = {'Date':Date, 'Discription':Discription, 'Incubation':Incubation}
+data = {'Date':date, 'Discription':discriptions, 'Incubation':incubation}
   
 # Create the DataFrame  
 df = pd.DataFrame(data) 
@@ -45,13 +47,18 @@ df['Incubation'] = df['Incubation'].str.replace('positive', 'with Ecad')
 df['Incubation'] = df['Incubation'].str.replace('negative', 'without Ecad')
 
 # Assign the adhesion
-df['Adhesion'] = Adhesion
-df[['No', 'Small', 'Big', 'Undefined']] = df['Adhesion'].str.split(',',expand=True)
+df['Adhesion'] = adhesions
+df[['No_Ad', 'Small_Ad', 'Big_Ad', 'Undefined_Ad']] = df['Adhesion'].str.split(',',expand=True)
 df = df.drop(['Adhesion'], axis=1)
+
+# Assign the blebs
+df['Blebs'] = blebs
+df[['Small_Bl', 'Big_Bl', 'Enormous_Bl']] = df['Blebs'].str.split(',',expand=True)
+df = df.drop(['Blebs'], axis=1)
 
 
 # Assign the notes
-df['Notes']= Notes
+df['Notes']= notes
 
 # Save the DataFrame.  
 df.to_csv('Data/Cells_on_BSA_Experiments.csv', index=False)
